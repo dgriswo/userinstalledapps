@@ -36,6 +36,16 @@ function Get-Sid
 	return ""
 }
 
+# Function to escape values 
+function Escape-Xml {
+    param([AllowNull()][string]$Value)
+    if ($Value -eq $null) {
+        return ""
+    }
+
+    return [System.Security.SecurityElement]::Escape($Value)
+}
+
 $xml = ""
 
 $profileListPath =  @("Registry::HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList\*")
@@ -79,10 +89,10 @@ foreach ($user in $users) {
                 $comparator = "*$appname*"
                 if (-Not (@($appnames) -like $comparator)) {
                     $xml += "<USERINSTALLEDAPPS>`n"
-                    $xml += "<USERNAME>" + $username + "</USERNAME>`n"
-                    $xml += "<APPNAME>" + $appname + "</APPNAME>`n"
-                    $xml += "<PUBLISHER>" + $publisher + "</PUBLISHER>`n"
-                    $xml += "<VERSION>" + $version + "</VERSION>`n"
+                    $xml += "<USERNAME>" + (Escape-Xml $username) + "</USERNAME>`n"
+                    $xml += "<APPNAME>" + (Escape-Xml $appname) + "</APPNAME>`n"
+                    $xml += "<PUBLISHER>" + (Escape-Xml $publisher) + "</PUBLISHER>`n"
+                    $xml += "<VERSION>" + (Escape-Xml $version) + "</VERSION>`n"
 				    $xml += "</USERINSTALLEDAPPS>`n"
                 }
                 $appnames += $appname
@@ -113,10 +123,10 @@ $regLocalApplications | ForEach-Object {
 		$comparator = "*$appname*"
         if (-Not (@($appnames) -like $comparator)) {
             $xml += "<USERINSTALLEDAPPS>`n"	
-            $xml += "<USERNAME>" + $username + "</USERNAME>`n"
-            $xml += "<APPNAME>" + $appname + "</APPNAME>`n"
-            $xml += "<PUBLISHER>" + $publisher + "</PUBLISHER>`n"
-            $xml += "<VERSION>" + $version + "</VERSION>`n"  
+            $xml += "<USERNAME>" + (Escape-Xml $username) + "</USERNAME>`n"
+            $xml += "<APPNAME>" + (Escape-Xml $appname) + "</APPNAME>`n"
+            $xml += "<PUBLISHER>" + (Escape-Xml $publisher) + "</PUBLISHER>`n"
+            $xml += "<VERSION>" + (Escape-Xml $version) + "</VERSION>`n"  
 		    $xml += "</USERINSTALLEDAPPS>`n"
         }
         $appnames += $appname
